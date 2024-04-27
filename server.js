@@ -1,33 +1,57 @@
-const NodeMediaServer = require('node-media-server');
 const express = require('express');
 const path = require('path');
-
-// Set up NodeMediaServer for RTMP and HTTP-FLV streaming
-const config = {
-    rtmp: {
-        port: 1935,
-        chunk_size: 60000,
-        gop_cache: true,
-        ping: 60,
-        ping_timeout: 30
-    },
-    http: {
-        port: 8000,
-        mediaroot: './media',
-        allow_origin: '*',
-        webroot: './public',
-        mediaroot: './media',
-        allow_origin: '*'
-    }
-};
-
-const nms = new NodeMediaServer(config);
-nms.run();
-
-// Set up Express.js server to serve static files
+const bodyParser = require('body-parser');
 const app = express();
-app.use(express.static('public'));
+const PORT = 1234;
 
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
+// Serve static files from the 'public' folder
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+
+// Handle POST request to /signup endpoint
+app.post('/signup', (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+
+    // You can do further processing here, such as validation, saving to the database, etc.
+    console.log(`Received sign up request with email: ${email} and password: ${password}`);
+    
+    // query the sql and check is the data is available. check sql vs the variables email , password
+    
+
+    // Send a response indicating success
+    res.redirect('/success');
+});
+
+
+// Handle POST request to /signin endpoint
+app.post('/signin', (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+
+    console.log(`Received sign in request with email: ${email} and password: ${password}`);
+    
+    // query the sql for existing data and hence proceed to success
+
+
+    if (email === 'kooljiwan05@gmail.com' && password === 'deep') {
+        console.log('Sign in correct');
+        res.redirect('/success');
+    }
+    else{
+        console.log('Sign in is not correct bro');
+        res.send('Sign in not successful!');
+        
+    }
+});
+
+
+app.get('/success', (req, res) => {
+    res.sendFile(path.join(__dirname, '/public/success.html'));
+});
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });

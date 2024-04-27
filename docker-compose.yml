@@ -1,0 +1,35 @@
+version: "3.2"
+services:
+  nodejs:
+    build: 
+      context: .
+      dockerfile: dockerfile
+    networks:
+      - frontend
+      - backend
+    environment:
+      - MYSQL_HOST=deep-mysql-app
+      - MYSQL_USER=user1
+      - MYSQL_PASS=user1
+      - MYSQL_DB=my_db
+    volumes:
+      - ./www/:/var/www/html/
+    ports:
+      - "1234:1234"
+    container_name: main-nodejs-app
+  mysql:
+    build:
+      dockerfile: db_dockerfile
+    networks:
+      - backend
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=user1
+      - MYSQL_PASSWORD=user1
+      - MYSQL_DATABASE=my_db
+    ports:
+      - 3306:3306
+    container_name: main-mysql-app
+networks:
+  frontend:
+  backend:
